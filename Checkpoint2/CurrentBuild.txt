@@ -1,0 +1,4 @@
+Currently the file has the implementation of the cases that will be tested and has the raise TODO, 
+to fill in, along with test casesd that need to be written. Current difficulties are creating the 
+actual test cases at the bottom to try, to ensure that the additional written statements to the Ocaml
+language is correct.
