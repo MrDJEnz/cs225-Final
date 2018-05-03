@@ -15,13 +15,21 @@ exception NOT_FOUND
 type loc = int
 [@@deriving show {with_path = false}]
 
+(* Label Variables
+* p ∈ P  ⩴ |label
+*)
+
+type p = string
+[@@deriving show {with_path = false}]
+
 (* Expressions.
  *
  * e ∈ exp ⩴ true | false | if(e){e}{e}
  *         | ⟨e,e⟩ | projl(e) | projr(e)
  *         | ref(e) | !e | e ≔ e | e ; e
- *         | loc(ℓ)
+ *         | loc(ℓ) | tag(t,p) | untag(t,p)
 *)
+
 type exp =
   | True
   | False
@@ -34,18 +42,22 @@ type exp =
   | Assign of exp * exp
   | Sequence of exp * exp
   | Loc of loc
+  | Tag of exp * p
+  | Untag of exp * p
 [@@deriving show {with_path = false}]
 
 (* Values.
  * v ∈ value ⩴ true | false
  *           | ⟨v,v⟩
  *           | loc(ℓ)
+ *           |  Tag(v,p)
 *)
 type value =
   | VTrue
   | VFalse
   | VPair of value * value
   | VLoc of loc
+  | VTag of value * p
 [@@deriving show {with_path = false}]
 
 let rec exp_of_val (v : value) : exp = match v with
@@ -53,6 +65,7 @@ let rec exp_of_val (v : value) : exp = match v with
   | VFalse -> False
   | VPair(v1,v2) -> Pair(exp_of_val v1,exp_of_val v2)
   | VLoc(l) -> Loc(l)
+  | VTag(v,p) -> Tag(exp_of_val v, p)
 
 type store = (loc * value) list
 [@@deriving show {with_path = false}]
@@ -143,10 +156,10 @@ let rec step (e0 : exp) (s : store) : result = match e0 with
       | Stuck -> Stuck
     end
   | Loc(l) -> Val(VLoc(l))
-  
-  | Tag(t,p) -> RAISE TODO
-  
-  | Untag(t,p) -> RAISE TODO
+
+  | Tag(t,p) -> raise TODO
+
+  | Untag(t,p) -> raise TODO
 
 (* The reflexive transitive closure of the small-step semantics relation *)
 let rec step_star (e : exp) (s : store) : exp * store = match step e s with
@@ -164,6 +177,7 @@ type ty =
   | Bool
   | Prod of ty * ty
   | Ref of ty
+  | Tag of p
 [@@deriving show {with_path = false}]
 
 type store_ty = (loc * ty) list
@@ -224,11 +238,12 @@ let rec infer (e : exp) (st : store_ty) : ty = match e with
   | Loc(l) ->
     let t1 = store_ty_lookup l st in
     Ref(t1)
-    
-  | Tag(t,p) -> RAISE TODO
-  
-  | Untag(t,p) -> RAISE TODO
-  
+
+  | Tag(e,p) -> raise TODO
+
+  | Untag(e,p) -> raise TODO
+
+
 let step_tests : test_block =
   let s1 : store = [(1,VTrue);(2,VFalse)] in
   let s2 : store = [(1,VTrue);(2,VTrue)] in
@@ -270,6 +285,9 @@ let step_tests : test_block =
       ; (Sequence(True,False),s1)                              , Step(False,s1)
       ; (Sequence(Assign(Loc(2),True),Deref(Loc(2))),s1)       , Step(Sequence(True,Deref(Loc(2))),s2)
       ; (Sequence(Deref(True),False),s1)                       , Stuck
+          (*WRITING THE NEW TEST CASES*)
+      ; (Tag(Sequence(True,False),"Tagged"),s1)                , Step(Tag(False,"Tagged"),s2)
+      ; (Untag(Tag(True,"Tagged"),"Tagged"),s1)                , Step(True, s1)
       ]
     , (fun (e,s) -> step e s)
     , [%show : exp * store]
@@ -294,6 +312,7 @@ let infer_tests =
       ; Assign(Loc(1),False)                                 , Bool
       ; Assign(Loc(2),Pair(True,False))                      , Bool
       ; Sequence(Assign(Loc(1),False),Ref(True))             , Ref(Bool)
+        (*WRITING THE NEW TEST CASES*)
       ]
     , (fun e -> infer e st)
     , (fun e -> [%show : exp * store_ty] (e,st))
