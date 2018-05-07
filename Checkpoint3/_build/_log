@@ -1,0 +1,14 @@
+### Starting build.
+# Target: Regions_Effect.ml.depends, tags: { package(ppx_deriving.std), extension:ml, file:Regions_Effect.ml, ocaml, ocamldep, quiet, traverse }
+ ocamlfind ocamldep -package ppx_deriving.std -modules Regions_Effect.ml > Regions_Effect.ml.depends
+# Target: StringSetMap.ml.depends, tags: { package(ppx_deriving.std), extension:ml, file:StringSetMap.ml, ocaml, ocamldep, quiet, traverse }
+ ocamlfind ocamldep -package ppx_deriving.std -modules StringSetMap.ml > StringSetMap.ml.depends # cached
+# Target: Util.ml.depends, tags: { package(ppx_deriving.std), extension:ml, file:Util.ml, ocaml, ocamldep, quiet, traverse }
+ ocamlfind ocamldep -package ppx_deriving.std -modules Util.ml > Util.ml.depends # cached
+# Target: Util.cmo, tags: { package(ppx_deriving.std), byte, compile, extension:cmo, extension:ml, file:Util.cmo, file:Util.ml, implem, ocaml, quiet, traverse }
+ ocamlfind ocamlc -c -package ppx_deriving.std -o Util.cmo Util.ml # cached
+# Target: StringSetMap.cmo, tags: { package(ppx_deriving.std), byte, compile, extension:cmo, extension:ml, file:StringSetMap.cmo, file:StringSetMap.ml, implem, ocaml, quiet, traverse }
+ ocamlfind ocamlc -c -package ppx_deriving.std -o StringSetMap.cmo StringSetMap.ml # cached
+# Target: Regions_Effect.cmo, tags: { package(ppx_deriving.std), byte, compile, extension:cmo, extension:ml, file:Regions_Effect.cmo, file:Regions_Effect.ml, implem, ocaml, quiet, traverse }
+ ocamlfind ocamlc -c -package ppx_deriving.std -o Regions_Effect.cmo Regions_Effect.ml
+# Compilation successful.
