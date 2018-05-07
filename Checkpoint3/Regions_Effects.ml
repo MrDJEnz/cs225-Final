@@ -320,7 +320,7 @@ let step_tests : test_block =
       ; (Tag(Sequence(True,False),"Tagged"),s1) , Step(Tag(False,"Tagged"),s1, st)
       ; (Tag(True,"true"),s1), Step(Tag(True, "true"), s1,st)
 (*THIS TEST BELOW SHOULD FAIL FOR DEBUG*)
-      (; (Tag(True,"true"),s1), Step(Tag(True, "false"), s1))
+      (*; (Tag(True,"true"),s1), Step(Tag(True, "false"), s1)*)
       ; (Untag(Tag(True,"Tagged"),"Tagged"),s1) , Step(True, s1,st)
       ; (Untag(Untag(True,"true"),"true"),s1), Stuck
       ]
